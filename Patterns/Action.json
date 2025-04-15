@@ -1,0 +1,39 @@
+{
+  "Name": "Action",
+  "Places": [
+    {
+      "Id": "p0",
+      "Name": "Start",
+      "X": 0,
+      "Y": 50
+    },
+    {
+      "Id": "p1",
+      "Name": "End",
+      "X": 200,
+      "Y": 50
+    }
+  ],
+  "Transitions": [
+    {
+      "Id": "t0",
+      "Name": "Action",
+      "X": 100,
+      "Y": 50
+    }
+  ],
+  "Arcs": [
+    {
+      "Id": "a0",
+      "SourceId": "p0",
+      "TargetId": "t0",
+      "Weight": 1
+    },
+    {
+      "Id": "a1",
+      "SourceId": "t0",
+      "TargetId": "p1",
+      "Weight": 1
+    }
+  ]
+}

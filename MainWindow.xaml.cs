@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Drawing;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -18,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PetryNet.ViewModels.Interfaces;
+using PetryNet.DTOS;
+using Microsoft.Win32;
 
 namespace PetryNet.Views
 {
@@ -30,6 +31,7 @@ namespace PetryNet.Views
 
         private MainViewModel mainViewModel = new MainViewModel();
         private SelectableElementViewModelBase firstClickedElement;
+        private PatternPreview _pendingPatternToPlace;
         public MainWindow()
         {
             InitializeComponent();
@@ -38,17 +40,33 @@ namespace PetryNet.Views
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.Handled)
-                return;
+            var frameworkElement = e.OriginalSource as FrameworkElement;
+            var itemVm = frameworkElement?.DataContext as SelectableElementViewModelBase;
 
+            // If it's an arc and we're in select mode, call the Arc method first
+            //if (mainViewModel.CurrentMode == ApplicationMode.Select && itemVm !=  && item)
+            //{
+            //    Arc_MouseLeftButtonDown(frameworkElement, e);
+
+            //    // If Arc_MouseLeftButtonDown handled the event, return early
+            //    if (e.Handled)
+            //        return;
+            //}
             
 
-            if (mainViewModel.CurrentMode == ApplicationMode.Select && !(sender is SelectableElementViewModelBase))
+            if (mainViewModel.CurrentMode == ApplicationMode.Select && itemVm == null)
             {
                 mainViewModel.ClearSelectedItems();
             }
 
             var position = e.GetPosition(PetriNetCanvas);
+
+            if (_pendingPatternToPlace != null)
+            {
+                mainViewModel.AddPattern(_pendingPatternToPlace.Pattern,false, position);
+                _pendingPatternToPlace = null;
+                return;
+            }
 
             switch (mainViewModel.CurrentMode)
             {
@@ -93,6 +111,76 @@ namespace PetryNet.Views
                         mainViewModel.RemoveToken(clickedP);
                     }
                     break;
+                //default:
+                //    mainViewModel.AddPattern(position);
+                //    break;
+            }
+        }
+
+        private void OpenPatternSelectionWindow_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new PatternSelectionWindow("Patterns", "Images");
+            if (window.ShowDialog() == true)
+            {
+                _pendingPatternToPlace = window.SelectedPattern;
+            }
+        }
+
+        private void Arc_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                e.Handled = true;
+                var arcVm = ((FrameworkElement)sender).DataContext as ArcViewModel;
+                if (arcVm != null)
+                {
+                    var editWindow = new EditArcWindow(arcVm); // a new Window
+                    editWindow.ShowDialog(); // opens the window modally
+                }
+            }
+        }
+
+        private void SavePetriNet_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json",
+                Title = "Save Petri Net"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    (DataContext as MainViewModel)?.SavePetriNet(dialog.FileName);
+                    MessageBox.Show("Petri net saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void LoadPetriNet_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json",
+                Title = "Load Petri Net"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    (DataContext as MainViewModel)?.LoadPetriNet(dialog.FileName);
+                    MessageBox.Show("Petri net loaded successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Invalid or corrupted Petri net file:\n{ex.Message}", "Invalid File", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
     }

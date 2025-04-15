@@ -13,8 +13,6 @@ namespace PetryNet.Models
         public ObservableCollection<TransitionModel> Transitions { get; } = new();
         public ObservableCollection<ArcModel> Arcs { get; } = new();
 
-        public ObservableCollection<TokenModel> AllTokens { get; } = new();
-
         public PlaceModel CreatAndGetPlace(int placeId, string Name)
         {
             PlaceModel place = new PlaceModel(placeId, Name);
@@ -188,6 +186,11 @@ namespace PetryNet.Models
             }
         }
 
-
+        internal void ClearNet()
+        {
+            Places.Clear();
+            Transitions.Clear();
+            Arcs.Clear();
+        }
     }
 }

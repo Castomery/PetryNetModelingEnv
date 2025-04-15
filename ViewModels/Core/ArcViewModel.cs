@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,10 +29,14 @@ namespace PetryNet.ViewModels.Core
             _source = source;
             _target = target;
             Model = arc;
+            _weight = Model.Weight;
             _source.NodePositionChanged += UpdateCoords;
             _target.NodePositionChanged += UpdateCoords;
             CalculateCoordinates();
         }
+
+        private double _midX;
+        private double _midY;
 
         private double _startX;
         private double _startY;
@@ -39,6 +44,33 @@ namespace PetryNet.ViewModels.Core
         private double _endY;
 
         private double offsetY = 10;
+
+        private int _weight;
+        public int Weight
+        {
+            get => _weight;
+            set
+            {
+                if (_weight != value)
+                {
+                    _weight = value;
+                    Model.ChangeWeight(value);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double MidX
+        {
+            get => _midX;
+            set => SetProperty(ref _midX, value);
+        }
+
+        public double MidY
+        {
+            get => _midY;
+            set => SetProperty(ref _midY, value);
+        }
 
         public double StartX
         {
@@ -131,6 +163,22 @@ namespace PetryNet.ViewModels.Core
                                 targetCenterY + halfRadius * Math.Sin(angle + Math.PI));
             }
 
+            MidX = (StartX + EndX) / 2;
+
+            if (Math.Abs(StartY - EndY) > Math.Abs(StartX - EndX))
+            {
+
+                MidX += 10;
+            }
+
+            MidY = (StartY + EndY) / 2;
+
+            if (Math.Abs(StartX - EndX) >= Math.Abs(StartY - EndY))
+            {
+                MidY -= 20; 
+            }
+
+            
             EndPoint = new Point(EndX, EndY);
             ArrowPoint1 = CalculateArrowPoint(-20, 10);
             ArrowPoint2 = CalculateArrowPoint(-20, -10);
@@ -168,6 +216,12 @@ namespace PetryNet.ViewModels.Core
         public void UpdateCoords()
         {
             CalculateCoordinates();   
+        }
+
+        public void IncreaseWeightByOne()
+        {
+            Model.IncreaseWeightByOne();
+            OnPropertyChanged(nameof(Weight));
         }
     }
 }

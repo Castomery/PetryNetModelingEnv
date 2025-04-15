@@ -75,63 +75,98 @@ namespace PetryNet.AttachedProperties
 
         static void Fe_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+
             if (!isSelectionMode)
-            {
                 return;
-            }
 
-            SelectableElementViewModelBase selectableDesignerItemViewModelBase =
-                (SelectableElementViewModelBase)((FrameworkElement)sender).DataContext;
+            var element = (FrameworkElement)sender;
+            var selectableVm = element.DataContext as SelectableElementViewModelBase;
 
-            if (selectableDesignerItemViewModelBase != null)
+            if (selectableVm != null)
             {
-                if ((Keyboard.Modifiers & (ModifierKeys.Shift | ModifierKeys.Control)) != ModifierKeys.None)
-                {
-                    if ((Keyboard.Modifiers & (ModifierKeys.Shift)) != ModifierKeys.None)
-                    {
-                        selectableDesignerItemViewModelBase.IsSelected = !selectableDesignerItemViewModelBase.IsSelected;
-                    }
-
-                    if ((Keyboard.Modifiers & (ModifierKeys.Control)) != ModifierKeys.None)
-                    {
-                        selectableDesignerItemViewModelBase.IsSelected = !selectableDesignerItemViewModelBase.IsSelected;
-                    }
-                }
-                else if (!selectableDesignerItemViewModelBase.IsSelected)
-                {
-                    foreach (SelectableElementViewModelBase item in selectableDesignerItemViewModelBase.Parent.SelectedItems)
-                    {
-
-                        if (item is IPetryNetViewModel)
-                        {
-                            IPetryNetViewModel tmp = (IPetryNetViewModel)item;
-                            foreach (SelectableElementViewModelBase gItem in tmp.Items)
-                            {
-                                gItem.IsSelected = false;
-                            }
-
-                        }
-                        if (selectableDesignerItemViewModelBase.Parent is SelectableElementViewModelBase)
-                        {
-                            SelectableElementViewModelBase tmp = (SelectableElementViewModelBase)selectableDesignerItemViewModelBase.Parent;
-                            tmp.IsSelected = false;
-                        }
-                        item.IsSelected = false;
-                    }
-                    //if (selectableDesignerItemViewModelBase is IPetryNetViewModel)
-                    //{
-                    //    IPetryNetViewModel tmp = (IPetryNetViewModel)selectableDesignerItemViewModelBase;
-                    //    foreach (SelectableElementViewModelBase gItem in tmp.Items)
-                    //    {
-                    //        gItem.IsSelected = false;
-                    //    }
-
-                    //}
-                    selectableDesignerItemViewModelBase.Parent.SelectedItems.Clear();
-                    selectableDesignerItemViewModelBase.IsSelected = true;
-                }
+                HandleSelectionLogic(selectableVm); // Extract selection logic into a method
             }
-            e.Handled = true;
+
+            //if (!isSelectionMode)
+            //{
+            //    return;
+            //}
+
+            //SelectableElementViewModelBase selectableDesignerItemViewModelBase =
+            //    (SelectableElementViewModelBase)((FrameworkElement)sender).DataContext;
+
+            //if (selectableDesignerItemViewModelBase != null)
+            //{
+            //    if ((Keyboard.Modifiers & (ModifierKeys.Shift | ModifierKeys.Control)) != ModifierKeys.None)
+            //    {
+            //        if ((Keyboard.Modifiers & (ModifierKeys.Shift)) != ModifierKeys.None)
+            //        {
+            //            selectableDesignerItemViewModelBase.IsSelected = !selectableDesignerItemViewModelBase.IsSelected;
+            //        }
+
+            //        if ((Keyboard.Modifiers & (ModifierKeys.Control)) != ModifierKeys.None)
+            //        {
+            //            selectableDesignerItemViewModelBase.IsSelected = !selectableDesignerItemViewModelBase.IsSelected;
+            //        }
+            //    }
+            //    else if (!selectableDesignerItemViewModelBase.IsSelected)
+            //    {
+            //        foreach (SelectableElementViewModelBase item in selectableDesignerItemViewModelBase.Parent.SelectedItems)
+            //        {
+
+            //            if (item is IPetryNetViewModel)
+            //            {
+            //                IPetryNetViewModel tmp = (IPetryNetViewModel)item;
+            //                foreach (SelectableElementViewModelBase gItem in tmp.Items)
+            //                {
+            //                    gItem.IsSelected = false;
+            //                }
+
+            //            }
+            //            if (selectableDesignerItemViewModelBase.Parent is SelectableElementViewModelBase)
+            //            {
+            //                SelectableElementViewModelBase tmp = (SelectableElementViewModelBase)selectableDesignerItemViewModelBase.Parent;
+            //                tmp.IsSelected = false;
+            //            }
+            //            item.IsSelected = false;
+            //        }
+            //        //if (selectableDesignerItemViewModelBase is IPetryNetViewModel)
+            //        //{
+            //        //    IPetryNetViewModel tmp = (IPetryNetViewModel)selectableDesignerItemViewModelBase;
+            //        //    foreach (SelectableElementViewModelBase gItem in tmp.Items)
+            //        //    {
+            //        //        gItem.IsSelected = false;
+            //        //    }
+
+            //        //}
+            //        selectableDesignerItemViewModelBase.Parent.SelectedItems.Clear();
+            //        selectableDesignerItemViewModelBase.IsSelected = true;
+            //    }
+            //}
+            //e.Handled = true;
+        }
+
+        private static void HandleSelectionLogic(SelectableElementViewModelBase vm)
+        {
+            if ((Keyboard.Modifiers & (ModifierKeys.Shift | ModifierKeys.Control)) != ModifierKeys.None)
+            {
+                vm.IsSelected = !vm.IsSelected; // Toggle selection with Shift/Ctrl
+            }
+            else if (!vm.IsSelected)
+            {
+                // Clear previous selection
+                foreach (var item in vm.Parent.SelectedItems)
+                {
+                    if (item is IPetryNetViewModel petriNet)
+                    {
+                        foreach (var gItem in petriNet.Items)
+                            gItem.IsSelected = false;
+                    }
+                    item.IsSelected = false;
+                }
+                vm.Parent.SelectedItems.Clear();
+                vm.IsSelected = true; // Select the clicked item
+            }
         }
 
     }

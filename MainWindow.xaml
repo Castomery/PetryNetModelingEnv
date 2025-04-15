@@ -9,7 +9,7 @@
         xmlns:u ="clr-namespace:PetryNet.Utils"
         xmlns:enums="clr-namespace:PetryNet.Enums"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="900" Width="1500">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -53,27 +53,37 @@
             </Style.Triggers>
         </Style>
         <u:TokenCountToVisibilityConverter x:Key="TokenCountToVisibilityConverter"/>
+        <u:OffsetConverter x:Key="OffsetConverter"/>
     </Window.Resources>
 
 
     <DockPanel>
         <!-- Toolbar at the top -->
         <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
-                <!--<Button Content="▶️" ToolTip="Start Animation" Command="{Binding SetStartAnimationCommand}" />-->
-                <Button Content="🖱️" ToolTip="Select Components" Command="{Binding SetSelectModeCommand}" />
+            <ToolBar HorizontalAlignment="Stretch">
+                
                 <Button Content="▶" ToolTip="Start Simulation" Command="{Binding StartSimulationCommand}" />
                 <Button Content="--▶" ToolTip="Make Step" Command="{Binding MakeStepCommand}" />
+                <Separator/>
+                
+                <Button Content="🖱️" ToolTip="Select Components" Command="{Binding SetSelectModeCommand}" />
                 <Button Content="⚪" ToolTip="Add Place" Command="{Binding SetAddPlaceModeCommand}" />
                 <Button Content="⬛" ToolTip="Add Transition" Command="{Binding SetAddTransitionModeCommand}" />
                 <Button Content="➡️" ToolTip="Add Arc" Command="{Binding SetAddArcModeCommand}" />
                 <Button Content="🔴" ToolTip="Add Token" Command="{Binding SetAddTokenModeCommand}" />
                 <Button Content="❌" ToolTip="Remove Token" Command="{Binding SetRemoveTokenModeCommand}" />
+                <Separator/>
+                
+                <Button Content="Pattern" ToolTip="Add Pattern" Click="OpenPatternSelectionWindow_Click" />
+                <Separator/>
+                
+                <Button Content="💾" Width="120" Margin="5" Click="SavePetriNet_Click"/>
+                <Button Content="📂" Width="120" Margin="5" Click="LoadPetriNet_Click"/>
             </ToolBar>
         </ToolBarTray>
 
         <Grid>
-            <Canvas x:Name="PetriNetCanvas" Background="White" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" >
+            <Canvas x:Name="PetriNetCanvas" Background="Transparent" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" >
                 <ItemsControl ItemsSource="{Binding PetryNetViewModel.Places}">
                     <ItemsControl.ItemsPanel>
                         <!-- Use Canvas as the panel for arranging items -->
@@ -108,6 +118,21 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
+
+                                <TextBlock Text="{Binding Name}"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Background="Transparent"
+                                        Padding="2"
+                                        TextAlignment="Center">
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform 
+                                            X="{Binding X, Converter={StaticResource OffsetConverter}, ConverterParameter=30}" 
+                                            Y="{Binding Y, Converter={StaticResource OffsetConverter}, ConverterParameter=35}" />
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+
 
                                 <ItemsControl ItemsSource="{Binding Tokens}">
                                     <ItemsControl.ItemsPanel>
@@ -161,29 +186,49 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="{Binding Width}" Height="{Binding Height}">
-                                <Rectangle.RenderTransform>
-                                    <TranslateTransform X="{Binding X, Mode=TwoWay}" Y="{Binding Y, Mode=TwoWay}" />
-                                </Rectangle.RenderTransform>
-                                <Rectangle.Style>
-                                    <Style TargetType="Rectangle">
-                                        <!-- Default Setters -->
-                                        <Setter Property="s:SelectionProps.EnabledForSelection" Value="True" />
-                                        <Setter Property="s:DragAndDropPros.EnabledForDragDrop" Value="True" />
+                            <Canvas>
 
-                                        <!-- Default Fill (when not selected) -->
-                                        <Setter Property="Fill" Value="Black" />
+                                <Rectangle Width="{Binding Width}" Height="{Binding Height}">
+                                    <Rectangle.RenderTransform>
+                                        <TranslateTransform X="{Binding X, Mode=TwoWay}" Y="{Binding Y, Mode=TwoWay}" />
+                                    </Rectangle.RenderTransform>
+                                    <Rectangle.Style>
+                                        <Style TargetType="Rectangle">
+                                            <!-- Default Setters -->
+                                            <Setter Property="s:SelectionProps.EnabledForSelection" Value="True" />
+                                            <Setter Property="s:DragAndDropPros.EnabledForDragDrop" Value="True" />
 
-                                        <!-- Trigger when IsSelected is true -->
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEnabled}" Value="True">
-                                                <Setter Property="Fill" Value="Red" />
-                                                <!-- Change to your desired fill color for transitions -->
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Rectangle.Style>
-                            </Rectangle>
+                                            <!-- Default Fill (when not selected) -->
+                                            <Setter Property="Fill" Value="Black" />
+
+                                            <!-- Trigger when IsSelected is true -->
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                    <Setter Property="Fill" Value="Red" />
+                                                    <!-- Change to your desired fill color for transitions -->
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Fill" Value="Blue" />
+                                                    <!-- Change to your desired fill color for transitions -->
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Rectangle.Style>
+                                </Rectangle>
+                                <TextBlock Text="{Binding Name}"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Background="Transparent"
+                                        Padding="2"
+                                        TextAlignment="Center">
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform 
+                                            X="{Binding X, Converter={StaticResource OffsetConverter}, ConverterParameter=20}" 
+                                            Y="{Binding Y, Converter={StaticResource OffsetConverter}, ConverterParameter=35}" />
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Canvas>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -191,7 +236,7 @@
                 <ItemsControl ItemsSource="{Binding PetryNetViewModel.Arcs}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas />
+                            <Canvas/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -203,7 +248,8 @@
                     Y1="{Binding EndY}" 
                     X2="{Binding StartX}" 
                     Y2="{Binding StartY}" 
-                    StrokeThickness="4">
+                    StrokeThickness="4"
+                    MouseLeftButtonDown="Arc_MouseLeftButtonDown">
                                     <Line.Style>
                                         <Style TargetType="Line">
                                             <Setter Property="Stroke" Value="Black"/>
@@ -218,7 +264,7 @@
                                 </Line>
 
                                 <!-- Arrowhead Path -->
-                                <Path Stroke="Black" StrokeThickness="4" Fill="Black">
+                                <Path  StrokeThickness="4">
                                     <Path.Data>
                                         <PathGeometry>
                                             <PathFigure StartPoint="{Binding EndPoint}">
@@ -228,7 +274,30 @@
                                             </PathFigure>
                                         </PathGeometry>
                                     </Path.Data>
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Stroke" Value="Black"/>
+                                            <Setter Property="Fill" Value="Black"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Fill" Value="Blue" />
+                                                    <Setter Property="Stroke" Value="Blue"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
                                 </Path>
+
+                                <TextBlock Text="{Binding Weight}" 
+                                 FontSize="12" FontWeight="Bold" Foreground="Black" Background="Transparent"
+                                           TextAlignment="Center"
+                                            RenderTransformOrigin="0.5,0.5">
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform 
+                                            X="{Binding MidX}" 
+                                            Y="{Binding MidY}" />
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
                             </Canvas>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
