@@ -12,6 +12,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Reflection.Metadata;
 using PetryNet.DTOS;
+using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace PetryNet.ViewModels.Core
 {
@@ -329,7 +331,96 @@ namespace PetryNet.ViewModels.Core
             indexForTransitions = 0;
             indexForArcs = 0;
             _allItems.Clear();
-    }
+        }
+
+        internal void DeleteElements()
+        {
+            foreach (var item in SelectedItems)
+            {
+                _allItems.Remove(item);
+                if (item is PlaceViewModel p)
+                {
+                    bool isLast = Places.IndexOf(p) == Places.Count - 1 ? true : false;
+                    Places.Remove(p);
+                    _petryNetModel.DeleteElement(p.Model);
+                    if (isLast)
+                    {
+                        CheckIndexesForElementType(item);
+                    }
+                    DeleteConnectedArcs(item);
+                }
+                else if (item is TransitionViewModel t)
+                {
+                    bool isLast = Transitions.IndexOf(t) == Transitions.Count - 1 ? true : false;
+                    Transitions.Remove(t);
+                    _petryNetModel.DeleteElement(t.Model);
+                    if (isLast)
+                    {
+                        CheckIndexesForElementType(item);
+                    }
+                    DeleteConnectedArcs(item);
+                }
+                else if (item is ArcViewModel a)
+                {
+                    Arcs.Remove(a);
+                    _petryNetModel.DeleteElement(a.Model);
+                }
+            }
+        }
+
+        internal void DeleteConnectedArcs(SelectableElementViewModelBase item)
+        {
+            var conArcs = Arcs.Where(x => x.Source == item || x.Target == item).ToList();
+            foreach (var arc in conArcs)
+            {
+                _allItems.Remove(arc);
+                Arcs.Remove(arc);
+                _petryNetModel.DeleteElement(arc.Model);
+            }
+        }
+
+        internal void CheckIndexesForElementType(SelectableElementViewModelBase item)
+        {
+            if (item is PlaceViewModel)
+            {
+                if (Places.Count > 0)
+                {
+
+                    int maxNumber = Places.Select(p =>
+                    {
+                        Match match = Regex.Match(p.Name, @"\d+");
+                        return match.Success ? int.Parse(match.Value) : -1;
+                    })
+                    .Max();
+
+                    indexForPlaces = maxNumber + 1;
+                }
+                else
+                {
+                    indexForPlaces = 0;
+                }
+
+            }
+            else if (item is TransitionViewModel)
+            {
+                if (Transitions.Count > 0)
+                {
+
+                    int maxNumber = Transitions.Select(t =>
+                    {
+                        Match match = Regex.Match(t.Name, @"\d+");
+                        return match.Success ? int.Parse(match.Value) : -1;
+                    })
+                    .Max();
+
+                    indexForTransitions = maxNumber + 1;
+                }
+                else
+                {
+                    indexForTransitions = 0;
+                }
+            }
+        }
 
         //private void InitializeViewModels()
         //{

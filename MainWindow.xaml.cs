@@ -117,6 +117,17 @@ namespace PetryNet.Views
             }
         }
 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Delete)
+            {
+                if(mainViewModel.PetryNetViewModel.SelectedItems.Count > 0)
+                {
+                    mainViewModel.DeleteElements();            
+                }
+            }
+        }
+
         private void OpenPatternSelectionWindow_Click(object sender, RoutedEventArgs e)
         {
             var window = new PatternSelectionWindow("Patterns", "Images");
@@ -182,6 +193,11 @@ namespace PetryNet.Views
                     MessageBox.Show($"Invalid or corrupted Petri net file:\n{ex.Message}", "Invalid File", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+        }
+
+        private void OnNewNet_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.ClearCurrentNet();
         }
     }
 }

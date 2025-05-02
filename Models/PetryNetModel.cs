@@ -192,5 +192,21 @@ namespace PetryNet.Models
             Transitions.Clear();
             Arcs.Clear();
         }
+
+        internal void DeleteElement(NodeModel model)
+        {
+            if(model is PlaceModel)
+            {
+                Places.Remove(model as PlaceModel);
+            }
+            else if(model is TransitionModel)
+            {
+                Transitions.Remove(model as TransitionModel);
+            }
+            else if(model is ArcModel)
+            {
+                Arcs.Remove(model as ArcModel);
+            }
+        }
     }
 }

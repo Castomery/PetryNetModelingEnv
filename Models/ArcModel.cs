@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace PetryNet.Models
 {
-    public class ArcModel
+    public class ArcModel : NodeModel
     {
         public int Id { get; private set; }
         public NodeModel Source { get; private set; }
         public NodeModel Target { get; private set; }
         public int Weight { get; private set; } = 1;
 
-        public ArcModel(int id, NodeModel source, NodeModel target)
+        public ArcModel(int id, NodeModel source, NodeModel target) : base(id)
         {
-            Id = id;
             Source = source;
             Target = target;
         }

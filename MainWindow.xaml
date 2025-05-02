@@ -9,7 +9,7 @@
         xmlns:u ="clr-namespace:PetryNet.Utils"
         xmlns:enums="clr-namespace:PetryNet.Enums"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1500">
+        Title="MainWindow" Height="900" Width="1500" KeyDown="Window_KeyDown">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -61,7 +61,10 @@
         <!-- Toolbar at the top -->
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar HorizontalAlignment="Stretch">
-                
+
+                <Button Content="Pattern" ToolTip="Add Pattern" Click="OnNewNet_Click" />
+                <Separator/>
+
                 <Button Content="▶" ToolTip="Start Simulation" Command="{Binding StartSimulationCommand}" />
                 <Button Content="--▶" ToolTip="Make Step" Command="{Binding MakeStepCommand}" />
                 <Separator/>
@@ -75,6 +78,10 @@
                 <Separator/>
                 
                 <Button Content="Pattern" ToolTip="Add Pattern" Click="OpenPatternSelectionWindow_Click" />
+                <Separator/>
+                <Button Content="Incidence Matrix" Command="{Binding ShowIncidenceMatrixCommand}" />
+                <Separator/>
+                <Button Content="Аналіз Інваріантів" Command="{Binding ShowInvariantAnalysisCommand}" Margin="5"/>
                 <Separator/>
                 
                 <Button Content="💾" Width="120" Margin="5" Click="SavePetriNet_Click"/>

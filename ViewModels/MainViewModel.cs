@@ -5,6 +5,7 @@ using PetryNet.Enums;
 using PetryNet.Models;
 using PetryNet.Utils;
 using PetryNet.ViewModels.Core;
+using PetryNet.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -70,6 +71,7 @@ namespace PetryNet.ViewModels
         public ICommand SetRemoveTokenModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.RemoveToken; IsSelecting = false; });
         public ICommand StartSimulationCommand => new RelayCommand(_ => StartSimulation());
         public ICommand MakeStepCommand => new RelayCommand(_ => MakeStep());
+        public ICommand ShowInvariantAnalysisCommand => new RelayCommand(_ => ExecuteShowInvariantAnalysis());
 
         public void AddPlace(Point position)
         {
@@ -143,14 +145,12 @@ namespace PetryNet.ViewModels
                     {
                         PlaceViewModel p => p.Name,
                         TransitionViewModel t => t.Name,
-                        _ => null
                     },
 
                     TargetId = a.Target switch
                     {
                         PlaceViewModel p => p.Name,
                         TransitionViewModel t => t.Name,
-                        _ => null
                     },
                     Weight = a.Weight
                 }).ToList()
@@ -184,9 +184,28 @@ namespace PetryNet.ViewModels
             AddPattern(pattern, true, new Point(0, 0));
         }
 
+        public ICommand ShowIncidenceMatrixCommand => new RelayCommand(_ => ShowIncidenceMatrix());
+
+        private void ShowIncidenceMatrix()
+        {
+            var window = new IncidenceMatrixWindow(PetryNetViewModel);
+            window.ShowDialog();
+        }
+
+        private void ExecuteShowInvariantAnalysis()
+        {
+            var window = new InvariantAnalysisWindow(PetryNetViewModel);
+            window.ShowDialog();
+        }
+
         public void ClearCurrentNet()
         {
             PetryNetViewModel.ClearNet();
+        }
+
+        internal void DeleteElements()
+        {
+            PetryNetViewModel.DeleteElements();
         }
     }
 }
