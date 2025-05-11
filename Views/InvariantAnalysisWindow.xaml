@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <!-- Properties Section -->
-        <GroupBox Header="Динамічні властивості" Grid.Row="0">
+        <GroupBox Header="Властивості" Grid.Row="0">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>

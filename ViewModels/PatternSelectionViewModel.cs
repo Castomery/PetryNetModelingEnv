@@ -16,13 +16,14 @@ namespace PetryNet.ViewModels
     public class PatternSelectionViewModel : BaseViewModel
     {
         const string PATH = "C:\\Інше\\темп\\Project\\PetryNet\\PetryNet\\Patterns";
+        const string PATHPC = "D:\\Projects\\PetryNet\\PetryNet\\Patterns";
         public ObservableCollection<PatternPreview> Patterns { get; set; }
         public PatternPreview SelectedPattern { get; set; }
 
         public PatternSelectionViewModel()
         {
             Patterns = new ObservableCollection<PatternPreview>(
-                PatternLibrary.LoadAllPatternPreviews(PATH));
+                PatternLibrary.LoadAllPatternPreviews(PATHPC));
         }
 
         public ICommand SelectPatternCommand => new RelayCommand(p =>

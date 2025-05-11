@@ -62,7 +62,7 @@
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar HorizontalAlignment="Stretch">
 
-                <Button Content="Pattern" ToolTip="Add Pattern" Click="OnNewNet_Click" />
+                <Button Content="New" ToolTip="Add Pattern" Click="OnNewNet_Click" />
                 <Separator/>
 
                 <Button Content="▶" ToolTip="Start Simulation" Command="{Binding StartSimulationCommand}" />
