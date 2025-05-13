@@ -11,17 +11,24 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using PetryNet.ViewModels.Core;
 
 namespace PetryNet.Views
 {
     /// <summary>
-    /// Interaction logic for EditTransitionWindow.xaml
+    /// Interaction logic for EditPlaceWindow.xaml
     /// </summary>
-    public partial class EditTransitionWindow : Window
+    public partial class EditPlaceWindow : Window
     {
-        public EditTransitionWindow()
+        public EditPlaceWindow(PlaceViewModel place)
         {
             InitializeComponent();
+            DataContext = place;
+        }
+
+        private void Ok_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

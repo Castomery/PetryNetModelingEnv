@@ -22,6 +22,21 @@ namespace PetryNet.ViewModels.Core
         private double _tokenTextCoordX;
         private double _tokenTextCoordY;
 
+        private int _tokenLimit;
+        public int TokenLimit
+        {
+            get => _tokenLimit;
+            set
+            {
+                if (_tokenLimit != value)
+                {
+                    _tokenLimit = value;
+                    Model.SetTokenLimit(value);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public double TokenTextCoordX { get => _tokenTextCoordX; set => SetProperty(ref _tokenTextCoordX, value); }
         public double TokenTextCoordY { get => _tokenTextCoordY; set => SetProperty(ref _tokenTextCoordY, value); }
 
@@ -63,6 +78,11 @@ namespace PetryNet.ViewModels.Core
             //}
             //OnPropertyChanged(nameof(TokenCount));
             //OnPropertyChanged(nameof(DisplayText));
+        }
+
+        public void SetPlaceLimit(int limit)
+        {
+            Model.SetTokenLimit(limit);
         }
 
         private TokenViewModel CreateTokenViewModel(TokenModel token, int countOfToken)

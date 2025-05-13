@@ -9,6 +9,7 @@ namespace PetryNet.DTOS
     public class PatternDTO
     {
         public string Name { get; set; }
+        public bool IsSafe { get; set; }
         public List<PlaceDTO> Places { get; set; }
         public List<TransitionDTO> Transitions { get; set; }
         public List<ArcDTO> Arcs { get; set; }

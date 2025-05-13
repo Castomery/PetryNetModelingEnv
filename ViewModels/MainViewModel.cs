@@ -25,6 +25,53 @@ namespace PetryNet.ViewModels
 
         private PatternLoader _patternLoader;
 
+        private bool _isSafetyNet;
+        public bool IsSafetyNet
+        {
+            get => _isSafetyNet;
+            set
+            {
+                if (_isSafetyNet != value)
+                {
+                    _isSafetyNet = value;
+                    OnPropertyChanged();
+
+                    PetryNetViewModel.SetIsSafeNet(_isSafetyNet);
+
+                    // Apply token limit logic to existing places if needed
+                    if (_isSafetyNet)
+                    {
+                        ApplyTokenLimits(1);
+                    }
+                    else
+                    {
+                        ApplyTokenLimits(_evaluationLimit);
+                    }
+                }
+            }
+        }
+
+        private void ApplyTokenLimits(int placeLimit)
+        {
+            PetryNetViewModel.SetPlaceLimit(placeLimit);
+        }
+
+        // Optional: Global evaluation limit (used if not per-place)
+        private int _evaluationLimit = 5;
+        public int EvaluationLimit
+        {
+            get => _evaluationLimit;
+            set
+            {
+                if (_evaluationLimit != value)
+                {
+                    _evaluationLimit = value;
+                    OnPropertyChanged();
+                    ApplyTokenLimits(_evaluationLimit);
+                }
+            }
+        }
+
         public ApplicationMode _currentMode;
         public ApplicationMode CurrentMode
         {
@@ -63,13 +110,13 @@ namespace PetryNet.ViewModels
             SetSelectModeCommand.Execute(true);
         }
 
-        public ICommand SetSelectModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.Select; IsSelecting = true; });
-        public ICommand SetAddPlaceModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddPlace; IsSelecting = false; });
-        public ICommand SetAddTransitionModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddTransition; IsSelecting = false; });
-        public ICommand SetAddArcModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddArc; IsSelecting = false; });
-        public ICommand SetAddTokenModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddToken; IsSelecting = false; });
-        public ICommand SetRemoveTokenModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.RemoveToken; IsSelecting = false; });
-        public ICommand StartSimulationCommand => new RelayCommand(_ => StartSimulation());
+        public ICommand SetSelectModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.Select; IsSelecting = true; ClearSelectedItems(); });
+        public ICommand SetAddPlaceModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddPlace; IsSelecting = false; ClearSelectedItems(); });
+        public ICommand SetAddTransitionModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddTransition; IsSelecting = false; ClearSelectedItems(); });
+        public ICommand SetAddArcModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddArc; IsSelecting = false; ClearSelectedItems(); });
+        public ICommand SetAddTokenModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.AddToken; IsSelecting = false; ClearSelectedItems(); });
+        public ICommand SetRemoveTokenModeCommand => new RelayCommand(_ => { CurrentMode = ApplicationMode.RemoveToken; IsSelecting = false; ClearSelectedItems(); });
+        public ICommand StartSimulationCommand => new RelayCommand(_ => { StartSimulation(); ClearSelectedItems(); } );
         public ICommand MakeStepCommand => new RelayCommand(_ => MakeStep());
         public ICommand ShowInvariantAnalysisCommand => new RelayCommand(_ => ExecuteShowInvariantAnalysis());
 
@@ -84,9 +131,9 @@ namespace PetryNet.ViewModels
             PetryNetViewModel.AddTransitionItemCommand.Execute(position);
         }
 
-        public void AddPattern(PatternDTO patternDTO, bool useSavedCoords, Point position)
+        public void AddPattern(PatternDTO patternDTO, bool useSavedCoords, bool isPattern, Point position)
         {
-            PetryNetViewModel.ApplyPatternToCanvas(patternDTO, useSavedCoords, position);
+            PetryNetViewModel.ApplyPatternToCanvas(patternDTO, useSavedCoords, isPattern, position);
         }
 
         internal void ClearSelectedItems()
@@ -129,7 +176,8 @@ namespace PetryNet.ViewModels
                 {
                     Id = p.Name,
                     X = p.X,
-                    Y = p.Y
+                    Y = p.Y,
+                    TokenLimit = p.Model.TokenLimit
                 }).ToList(),
 
                 Transitions = PetryNetViewModel.Transitions.Select(t => new TransitionDTO
@@ -153,7 +201,9 @@ namespace PetryNet.ViewModels
                         TransitionViewModel t => t.Name,
                     },
                     Weight = a.Weight
-                }).ToList()
+                }).ToList(),
+                IsSafe = _isSafetyNet
+
             };
 
             var json = JsonConvert.SerializeObject(pattern, Formatting.Indented);
@@ -181,7 +231,8 @@ namespace PetryNet.ViewModels
                 throw new InvalidDataException("Missing required parts of the Petri net.");
 
             ClearCurrentNet();
-            AddPattern(pattern, true, new Point(0, 0));
+            AddPattern(pattern, true, false, new Point(0, 0));
+            _isSafetyNet = pattern.IsSafe;
         }
 
         public ICommand ShowIncidenceMatrixCommand => new RelayCommand(_ => ShowIncidenceMatrix());

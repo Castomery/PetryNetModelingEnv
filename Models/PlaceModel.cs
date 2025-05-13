@@ -10,6 +10,7 @@ namespace PetryNet.Models
     public class PlaceModel : NodeModel
     {
         public string Name { get; set; } = "P";
+        public int TokenLimit { get; private set; }
         public List<TokenModel> Tokens { get; set; } = new List<TokenModel>();
 
         public PlaceModel(int id, string name) : base(id)
@@ -17,8 +18,14 @@ namespace PetryNet.Models
             Name = name;
         }
 
+        public void SetTokenLimit(int tokenLimit)
+        {
+            TokenLimit = tokenLimit;
+        }
+
         public void AddToken(TokenModel token)
         {
+            if (Tokens.Count >= TokenLimit) return; 
             if(Tokens.Contains(token)) return;
 
             Tokens.Add(token);

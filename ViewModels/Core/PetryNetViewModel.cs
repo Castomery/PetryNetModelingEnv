@@ -24,8 +24,11 @@ namespace PetryNet.ViewModels.Core
         private int indexForArcs = 0;
         private readonly PetryNetModel _petryNetModel;
 
+
         private List<SelectableElementViewModelBase> itemsToRemove;
 
+        public bool IsSafeNet { get; private set; } = false;
+        public int PlaceTokenLimit { get; private set; } = 5;
         public ObservableCollection<PlaceViewModel> Places { get; } = new();
         public ObservableCollection<TransitionViewModel> Transitions { get; } = new();
         public ObservableCollection<ArcViewModel> Arcs { get; } = new();
@@ -37,9 +40,20 @@ namespace PetryNet.ViewModels.Core
 
         public RelayCommand ClearSelectedItemsCommand => throw new NotImplementedException();
 
+
         public ObservableCollection<SelectableElementViewModelBase> Items
         {
             get { return _allItems; }
+        }
+
+        public void SetIsSafeNet(bool isSafe)
+        {
+            IsSafeNet = isSafe;
+        }
+
+        public void SetPlaceLimit(int placeLimit)
+        {
+            PlaceTokenLimit = placeLimit;
         }
 
         public List<SelectableElementViewModelBase> SelectedItems
@@ -107,6 +121,7 @@ namespace PetryNet.ViewModels.Core
             }
             else
             {
+                if (IsSafeNet) return true;
                 arcViewModel.IncreaseWeightByOne();
                 OnPropertyChanged("Weight");
                 return true;
@@ -136,6 +151,7 @@ namespace PetryNet.ViewModels.Core
             Point itemPos = (Point)position;
             var place = new PlaceViewModel(_petryNetModel.CreatAndGetPlace(indexForPlaces, "p" + indexForPlaces), itemPos.X, itemPos.Y, this);
             indexForPlaces++;
+            place.SetPlaceLimit(PlaceTokenLimit);
             Places.Add(place);
             _allItems.Add(place);
         }
@@ -198,6 +214,10 @@ namespace PetryNet.ViewModels.Core
         public void MakeStep()
         {
             List<TransitionViewModel> enableTransitions = Transitions.Where(transition => transition.IsEnabled).ToList();
+            if (enableTransitions.Count == 0)
+            {
+                return;
+            }
             Random rnd = new Random();
             TransitionViewModel transitionToFire = enableTransitions[rnd.Next(0, enableTransitions.Count)];
             List<PlaceViewModel> places = GetConnectedPlacesToTransition(transitionToFire);
@@ -235,7 +255,7 @@ namespace PetryNet.ViewModels.Core
             return _petryNetModel.IsTransitionEnabled(transition);
         }
 
-        public void ApplyPatternToCanvas(PatternDTO pattern, bool useStoredCoordinates, Point? position = null)
+        public void ApplyPatternToCanvas(PatternDTO pattern, bool useStoredCoordinates, bool isPattern, Point? position = null)
         {
             var idToElementMap = new Dictionary<string, NodeViewModel>();
 
@@ -273,7 +293,16 @@ namespace PetryNet.ViewModels.Core
                 pos.Y = placeDto.Y + offsetY;
 
                 AddPlace(pos);
-                idToElementMap[placeDto.Id] = Places.Last();
+                if (isPattern)
+                {
+                    Places.Last().SetPlaceLimit(PlaceTokenLimit);
+                }
+                else
+                {
+                    Places.Last().SetPlaceLimit(placeDto.TokenLimit);
+                }
+
+                    idToElementMap[placeDto.Id] = Places.Last();
             }
 
             // Add transitions

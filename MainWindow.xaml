@@ -54,6 +54,7 @@
         </Style>
         <u:TokenCountToVisibilityConverter x:Key="TokenCountToVisibilityConverter"/>
         <u:OffsetConverter x:Key="OffsetConverter"/>
+        <u:InverseBoolConverter x:Key="InverseBoolConverter"/>
     </Window.Resources>
 
 
@@ -86,7 +87,18 @@
                 
                 <Button Content="💾" Width="120" Margin="5" Click="SavePetriNet_Click"/>
                 <Button Content="📂" Width="120" Margin="5" Click="LoadPetriNet_Click"/>
+
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <CheckBox Content="Safety Net" IsChecked="{Binding IsSafetyNet}" Margin="0,0,20,0"/>
+
+                    <!-- Optional: Evaluation limit input -->
+                    <TextBlock Text="Evaluation Token Limit:" VerticalAlignment="Center"/>
+                    <TextBox Width="50" Text="{Binding EvaluationLimit}" 
+                        IsEnabled="{Binding IsSafetyNet, Converter={StaticResource InverseBoolConverter}}" 
+                        Margin="5,0,0,0"/>
+                </StackPanel>
             </ToolBar>
+            
         </ToolBarTray>
 
         <Grid>
@@ -102,7 +114,7 @@
                         <DataTemplate>
                             <Canvas>
 
-                                <Ellipse Width="{Binding Radius}" Height="{Binding Radius}" Stroke="Black">
+                                <Ellipse Width="{Binding Radius}" Height="{Binding Radius}" Stroke="Black" MouseLeftButtonDown="Place_MouseLeftButtonDown">
                                     <Ellipse.RenderTransform>
                                         <TranslateTransform X="{Binding X, Mode=TwoWay}" Y="{Binding Y, Mode=TwoWay}" />
                                     </Ellipse.RenderTransform>

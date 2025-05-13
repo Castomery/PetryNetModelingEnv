@@ -1,63 +1,64 @@
 {
-  "Name": "SequentialActions",
-  "Places": [
-    {
-      "Id": "p0",
-      "Name": "Start",
-      "X": 0,
-      "Y": 50
-    },
-    {
-      "Id": "p1",
-      "Name": "Middle",
-      "X": 150,
-      "Y": 50
-    },
-    {
-      "Id": "p2",
-      "Name": "End",
-      "X": 300,
-      "Y": 50
-    }
-  ],
-  "Transitions": [
-    {
-      "Id": "t0",
-      "Name": "tA",
-      "X": 75,
-      "Y": 50
-    },
-    {
-      "Id": "t1",
-      "Name": "tB",
-      "X": 225,
-      "Y": 50
-    }
-  ],
-  "Arcs": [
-    {
-      "Id": "a0",
-      "SourceId": "p0",
-      "TargetId": "t0",
-      "Weight": 1
-    },
-    {
-      "Id": "a1",
-      "SourceId": "t0",
-      "TargetId": "p1",
-      "Weight": 1
-    },
-    {
-      "Id": "a2",
-      "SourceId": "p1",
-      "TargetId": "t1",
-      "Weight": 1
-    },
-    {
-      "Id": "a3",
-      "SourceId": "t1",
-      "TargetId": "p2",
-      "Weight": 1
-    }
-  ]
+    "Name": "SequentialActions",
+    "IsSafe": false,
+    "Places": [
+        {
+            "Id": "p0",
+            "Name": "Start",
+            "X": 0,
+            "Y": 50
+        },
+        {
+            "Id": "p1",
+            "Name": "Middle",
+            "X": 150,
+            "Y": 50
+        },
+        {
+            "Id": "p2",
+            "Name": "End",
+            "X": 300,
+            "Y": 50
+        }
+    ],
+    "Transitions": [
+        {
+            "Id": "t0",
+            "Name": "tA",
+            "X": 75,
+            "Y": 50
+        },
+        {
+            "Id": "t1",
+            "Name": "tB",
+            "X": 225,
+            "Y": 50
+        }
+    ],
+    "Arcs": [
+        {
+            "Id": "a0",
+            "SourceId": "p0",
+            "TargetId": "t0",
+            "Weight": 1
+        },
+        {
+            "Id": "a1",
+            "SourceId": "t0",
+            "TargetId": "p1",
+            "Weight": 1
+        },
+        {
+            "Id": "a2",
+            "SourceId": "p1",
+            "TargetId": "t1",
+            "Weight": 1
+        },
+        {
+            "Id": "a3",
+            "SourceId": "t1",
+            "TargetId": "p2",
+            "Weight": 1
+        }
+    ]
 }

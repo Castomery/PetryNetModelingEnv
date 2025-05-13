@@ -52,18 +52,23 @@ namespace PetryNet.Views
             //    if (e.Handled)
             //        return;
             //}
-            
+
 
             if (mainViewModel.CurrentMode == ApplicationMode.Select && itemVm == null)
             {
                 mainViewModel.ClearSelectedItems();
             }
 
+            if (itemVm != null && (mainViewModel.CurrentMode == ApplicationMode.AddPlace || mainViewModel.CurrentMode == ApplicationMode.AddTransition))
+            {
+                return;
+            }
+
             var position = e.GetPosition(PetriNetCanvas);
 
             if (_pendingPatternToPlace != null)
             {
-                mainViewModel.AddPattern(_pendingPatternToPlace.Pattern,false, position);
+                mainViewModel.AddPattern(_pendingPatternToPlace.Pattern, false, true, position);
                 _pendingPatternToPlace = null;
                 return;
             }
@@ -111,19 +116,19 @@ namespace PetryNet.Views
                         mainViewModel.RemoveToken(clickedP);
                     }
                     break;
-                //default:
-                //    mainViewModel.AddPattern(position);
-                //    break;
+                    //default:
+                    //    mainViewModel.AddPattern(position);
+                    //    break;
             }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Delete)
+            if (e.Key == Key.Delete)
             {
-                if(mainViewModel.PetryNetViewModel.SelectedItems.Count > 0)
+                if (mainViewModel.PetryNetViewModel.SelectedItems.Count > 0)
                 {
-                    mainViewModel.DeleteElements();            
+                    mainViewModel.DeleteElements();
                 }
             }
         }
@@ -139,14 +144,36 @@ namespace PetryNet.Views
 
         private void Arc_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (mainViewModel.CurrentMode == ApplicationMode.Select)
             {
-                e.Handled = true;
-                var arcVm = ((FrameworkElement)sender).DataContext as ArcViewModel;
-                if (arcVm != null)
+                if (e.ClickCount == 2)
                 {
-                    var editWindow = new EditArcWindow(arcVm); // a new Window
-                    editWindow.ShowDialog(); // opens the window modally
+                    if (mainViewModel.IsSafetyNet) return;
+                    e.Handled = true;
+                    var arcVm = ((FrameworkElement)sender).DataContext as ArcViewModel;
+                    if (arcVm != null)
+                    {
+                        var editWindow = new EditArcWindow(arcVm); // a new Window
+                        editWindow.ShowDialog(); // opens the window modally
+                    }
+                }
+            }
+        }
+
+        private void Place_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (mainViewModel.CurrentMode == ApplicationMode.Select)
+            {
+
+                if (e.ClickCount == 2)
+                {
+                    e.Handled = true;
+                    var pVm = ((FrameworkElement)sender).DataContext as PlaceViewModel;
+                    if (pVm != null)
+                    {
+                        var editWindow = new EditPlaceWindow(pVm); // a new Window
+                        editWindow.ShowDialog(); // opens the window modally
+                    }
                 }
             }
         }

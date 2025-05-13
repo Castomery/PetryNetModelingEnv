@@ -1,135 +1,136 @@
 {
-  "Name": "SynchronizationPattern",
-  "Places": [
-    {
-      "Id": "p0",
-      "Name": "StartA",
-      "X": 0,
-      "Y": 50
-    },
-    {
-      "Id": "p1",
-      "Name": "StartB",
-      "X": 0,
-      "Y": 150
-    },
-    {
-      "Id": "p2",
-      "Name": "StartC",
-      "X": 0,
-      "Y": 250
-    },
-    {
-      "Id": "p3",
-      "Name": "AfterA",
-      "X": 150,
-      "Y": 50
-    },
-    {
-      "Id": "p4",
-      "Name": "AfterB",
-      "X": 150,
-      "Y": 150
-    },
-    {
-      "Id": "p5",
-      "Name": "AfterC",
-      "X": 150,
-      "Y": 250
-    },
-    {
-      "Id": "p6",
-      "Name": "End",
-      "X": 300,
-      "Y": 150
-    }
-  ],
-  "Transitions": [
-    {
-      "Id": "t0",
-      "Name": "tA",
-      "X": 75,
-      "Y": 50
-    },
-    {
-      "Id": "t1",
-      "Name": "tB",
-      "X": 75,
-      "Y": 150
-    },
-    {
-      "Id": "t2",
-      "Name": "tC",
-      "X": 75,
-      "Y": 250
-    },
-    {
-      "Id": "t3",
-      "Name": "tV",
-      "X": 225,
-      "Y": 150
-    }
-  ],
-  "Arcs": [
-    {
-      "Id": "a0",
-      "SourceId": "p0",
-      "TargetId": "t0",
-      "Weight": 1
-    },
-    {
-      "Id": "a1",
-      "SourceId": "t0",
-      "TargetId": "p3",
-      "Weight": 1
-    },
-    {
-      "Id": "a2",
-      "SourceId": "p1",
-      "TargetId": "t1",
-      "Weight": 1
-    },
-    {
-      "Id": "a3",
-      "SourceId": "t1",
-      "TargetId": "p4",
-      "Weight": 1
-    },
-    {
-      "Id": "a4",
-      "SourceId": "p2",
-      "TargetId": "t2",
-      "Weight": 1
-    },
-    {
-      "Id": "a5",
-      "SourceId": "t2",
-      "TargetId": "p5",
-      "Weight": 1
-    },
-    {
-      "Id": "a6",
-      "SourceId": "p3",
-      "TargetId": "t3",
-      "Weight": 1
-    },
-    {
-      "Id": "a7",
-      "SourceId": "p4",
-      "TargetId": "t3",
-      "Weight": 1
-    },
-    {
-      "Id": "a8",
-      "SourceId": "p5",
-      "TargetId": "t3",
-      "Weight": 1
-    },
-    {
-      "Id": "a9",
-      "SourceId": "t3",
-      "TargetId": "p6",
-      "Weight": 1
-    }
-  ]
+    "Name": "SynchronizationPattern",
+    "IsSafe": false,
+    "Places": [
+        {
+            "Id": "p0",
+            "Name": "StartA",
+            "X": 0,
+            "Y": 50
+        },
+        {
+            "Id": "p1",
+            "Name": "StartB",
+            "X": 0,
+            "Y": 150
+        },
+        {
+            "Id": "p2",
+            "Name": "StartC",
+            "X": 0,
+            "Y": 250
+        },
+        {
+            "Id": "p3",
+            "Name": "AfterA",
+            "X": 150,
+            "Y": 50
+        },
+        {
+            "Id": "p4",
+            "Name": "AfterB",
+            "X": 150,
+            "Y": 150
+        },
+        {
+            "Id": "p5",
+            "Name": "AfterC",
+            "X": 150,
+            "Y": 250
+        },
+        {
+            "Id": "p6",
+            "Name": "End",
+            "X": 300,
+            "Y": 150
+        }
+    ],
+    "Transitions": [
+        {
+            "Id": "t0",
+            "Name": "tA",
+            "X": 75,
+            "Y": 50
+        },
+        {
+            "Id": "t1",
+            "Name": "tB",
+            "X": 75,
+            "Y": 150
+        },
+        {
+            "Id": "t2",
+            "Name": "tC",
+            "X": 75,
+            "Y": 250
+        },
+        {
+            "Id": "t3",
+            "Name": "tV",
+            "X": 225,
+            "Y": 150
+        }
+    ],
+    "Arcs": [
+        {
+            "Id": "a0",
+            "SourceId": "p0",
+            "TargetId": "t0",
+            "Weight": 1
+        },
+        {
+            "Id": "a1",
+            "SourceId": "t0",
+            "TargetId": "p3",
+            "Weight": 1
+        },
+        {
+            "Id": "a2",
+            "SourceId": "p1",
+            "TargetId": "t1",
+            "Weight": 1
+        },
+        {
+            "Id": "a3",
+            "SourceId": "t1",
+            "TargetId": "p4",
+            "Weight": 1
+        },
+        {
+            "Id": "a4",
+            "SourceId": "p2",
+            "TargetId": "t2",
+            "Weight": 1
+        },
+        {
+            "Id": "a5",
+            "SourceId": "t2",
+            "TargetId": "p5",
+            "Weight": 1
+        },
+        {
+            "Id": "a6",
+            "SourceId": "p3",
+            "TargetId": "t3",
+            "Weight": 1
+        },
+        {
+            "Id": "a7",
+            "SourceId": "p4",
+            "TargetId": "t3",
+            "Weight": 1
+        },
+        {
+            "Id": "a8",
+            "SourceId": "p5",
+            "TargetId": "t3",
+            "Weight": 1
+        },
+        {
+            "Id": "a9",
+            "SourceId": "t3",
+            "TargetId": "p6",
+            "Weight": 1
+        }
+    ]
 }

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace PetryNet.ViewModels
 {
@@ -345,30 +346,75 @@ namespace PetryNet.ViewModels
 
         private void AnalyzeDynamicProperties()
         {
-            // Repetition: if we have a non-zero T-invariant
-            RepetitionStatus = TInvariants.Any(inv => inv.Vector.Any(v => v > 0))
-                ? "Повторювана" : "Неповторювана";
+            bool[] coveredT = new bool[TInvariants.Count];
+            for (int i = 0; i < TInvariants.Count; i++)
+            {
+                if (TInvariants[i].Vector.Any(v => v != 0))
+                    coveredT[i] = true;
+            }
+            int[] notCoveredIndsT = coveredT
+                .Select((covered, index) => (covered, index))
+                .Where(x => !x.covered)
+                .Select(x => x.index)
+                .ToArray();
 
-            // Boundedness: if there's a positive P-invariant covering all places
-            BoundednessStatus = PInvariants.Any(inv => inv.Vector.All(v => v > 0))
-                ? "Обмежена" : "Необмежена";
+            if (notCoveredIndsT.Length == 0)
+            {
+                RepetitionStatus = "Повторювана";
+                BoundednessStatus = "Обмежена";
+                LivenessStatus = "Жива";
+            }
+            else
+            {
+                RepetitionStatus = "Неповторювана";
+                BoundednessStatus = "Необмежена";
+                LivenessStatus = "Нежива";
+            }
 
-            // Conservativeness: if there's a P-invariant with all positive components
-            ConservativenessStatus = PInvariants.Any(inv => inv.Vector.All(v => v > 0))
-                ? "Збережена" : "Незбережена";
+            bool[] coveredP = new bool[PInvariants.Count];
+            for (int i = 0; i < PInvariants.Count; i++)
+            {
+                if (PInvariants[i].Vector.Any(v => v != 0))
+                    coveredP[i] = true;
+            }
+            int[] notCoveredIndsP = coveredP
+                .Select((covered, index) => (covered, index))
+                .Where(x => !x.covered)
+                .Select(x => x.index)
+                .ToArray();
 
-            // Liveness: weak liveness indicated by T-invariants
-            LivenessStatus = TInvariants.Any(inv => inv.Vector.Any(v => v > 0))
-                ? "Жива" : "Нежива";
+            if (notCoveredIndsP.Length == 0)
+            {
+                ConservativenessStatus = "Збережувана";
+                DeadlockFreeStatus = "Безконфліктна";
+            }
+            else
+            {
+                ConservativenessStatus = "Незбережувана";
+                DeadlockFreeStatus = "Конфліктна";
+            }
 
-            // Deadlock-freeness: cannot be determined from invariants alone
-            DeadlockFreeStatus = "Невідомо";
 
             // Controllability: matrix rank vs number of transitions
             var matrixDict = IncidenceMatrixGenerator.GenerateMatrix(_petryNet, MatrixType.Combined);
 
-            //ControllabilityStatus = rank == incidenceMatrix.GetLength(1)
-            //    ? "Контрольована" : $"Не контрольована (ранг={rank})";
+            var placeNames = matrixDict.Keys.ToList(); // rows
+            var transitionNames = matrixDict.First().Value.Keys.ToList(); // columns
+
+            double[,] matrix = new double[placeNames.Count, transitionNames.Count];
+
+            for (int i = 0; i < placeNames.Count; i++)
+            {
+                for (int j = 0; j < transitionNames.Count; j++)
+                {
+                    matrix[i, j] = matrixDict[placeNames[i]][transitionNames[j]];
+                }
+            }
+
+            var mathNetMatrix = Matrix<double>.Build.DenseOfArray(matrix);
+            int rank = mathNetMatrix.Rank();
+
+            ControllabilityStatus = rank == Math.Min(placeNames.Count, transitionNames.Count)? "Контрольована" : $"Не контрольована (ранг={rank})";
         }
     }
 }
