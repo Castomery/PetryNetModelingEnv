@@ -30,8 +30,11 @@ namespace PetryNet.ViewModels
         public InvariantAnalysisViewModel(PetryNetViewModel petriNet)
         {
             _petryNet = petriNet;
-            AnalyzeInvariants();
-            AnalyzeDynamicProperties();
+            if (_petryNet.Places.Count != 0 && _petryNet.Transitions.Count!=0)
+            {
+                AnalyzeInvariants();
+                AnalyzeDynamicProperties();
+            }
         }
 
         public void AnalyzeInvariants()
@@ -124,6 +127,10 @@ namespace PetryNet.ViewModels
 
         public static int[,] ToArrayMatrix(Dictionary<string, Dictionary<string, int>> matrixDict)
         {
+            if(matrixDict.Count == 0)
+            {
+                return new int[0,0];
+            }
             var rowKeys = matrixDict.Keys.ToList();
             var colKeys = matrixDict.First().Value.Keys.ToList();
 
@@ -349,8 +356,14 @@ namespace PetryNet.ViewModels
             bool[] coveredT = new bool[TInvariants.Count];
             for (int i = 0; i < TInvariants.Count; i++)
             {
-                if (TInvariants[i].Vector.Any(v => v != 0))
-                    coveredT[i] = true;
+                foreach (var tInv in TInvariants)
+                {
+                    if (tInv.Vector[i] != 0)
+                    {
+                        coveredT[i] = true;
+                        break;
+                    }
+                }
             }
             int[] notCoveredIndsT = coveredT
                 .Select((covered, index) => (covered, index))
@@ -372,11 +385,19 @@ namespace PetryNet.ViewModels
             }
 
             bool[] coveredP = new bool[PInvariants.Count];
+
             for (int i = 0; i < PInvariants.Count; i++)
             {
-                if (PInvariants[i].Vector.Any(v => v != 0))
-                    coveredP[i] = true;
+                foreach (var pInv in PInvariants)
+                {
+                    if (pInv.Vector[i] != 0)
+                    {
+                        coveredP[i] = true;
+                        break;
+                    }
+                }
             }
+
             int[] notCoveredIndsP = coveredP
                 .Select((covered, index) => (covered, index))
                 .Where(x => !x.covered)
@@ -414,7 +435,7 @@ namespace PetryNet.ViewModels
             var mathNetMatrix = Matrix<double>.Build.DenseOfArray(matrix);
             int rank = mathNetMatrix.Rank();
 
-            ControllabilityStatus = rank == Math.Min(placeNames.Count, transitionNames.Count)? "Контрольована" : $"Не контрольована (ранг={rank})";
+            ControllabilityStatus = rank == Math.Min(placeNames.Count, transitionNames.Count) ? "Контрольована" : $"Не контрольована (ранг={rank})";
         }
     }
 }

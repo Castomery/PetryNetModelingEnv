@@ -49,7 +49,7 @@
                 <TextBlock Text="Збереженість:" Style="{StaticResource StatusTextBlock}" Grid.Row="3" Grid.Column="0"/>
                 <TextBlock Text="{Binding ConservativenessStatus}" Style="{StaticResource StatusTextBlock}" Grid.Row="3" Grid.Column="1"/>
 
-                <TextBlock Text="Бездогладність:" Style="{StaticResource StatusTextBlock}" Grid.Row="4" Grid.Column="0"/>
+                <TextBlock Text="Конфліктність:" Style="{StaticResource StatusTextBlock}" Grid.Row="4" Grid.Column="0"/>
                 <TextBlock Text="{Binding DeadlockFreeStatus}" Style="{StaticResource StatusTextBlock}" Grid.Row="4" Grid.Column="1"/>
 
                 <TextBlock Text="Керованість:" Style="{StaticResource StatusTextBlock}" Grid.Row="5" Grid.Column="0"/>
