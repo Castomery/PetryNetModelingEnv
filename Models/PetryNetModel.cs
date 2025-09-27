@@ -124,7 +124,7 @@ namespace PetryNet.Models
                         isEnabled = false;
                         return isEnabled;
                     }
-                    else
+                    else if(place.Tokens.Count >= arc.Weight)
                     {
                         isEnabled = true;
                     }
@@ -207,6 +207,69 @@ namespace PetryNet.Models
             {
                 Arcs.Remove(model as ArcModel);
             }
+        }
+
+        internal List<int> GetTransitionPriorityId(List<TransitionModel> transitions)
+        {
+            bool isPriority = false;
+            int id = 0;
+            int maxWeight = int.MinValue;
+            TransitionModel priorityTransition = null;
+            List<int> priorityTransitionsId = new List<int>();
+            PlaceModel parentSource = null;
+
+            if (transitions.Count == 0)
+                throw new ArgumentNullException(nameof(transitions));
+
+            for (int i = 0; i < transitions.Count; i++)
+            {
+                List<ArcModel> linkedArcs = Arcs.Where(arc => (arc.Target == transitions[i])).ToList();
+
+                foreach (var arc in linkedArcs)
+                {
+                    if (arc.Source != null)
+                    {
+
+                        PlaceModel place = arc.Source as PlaceModel;
+
+                        if (maxWeight < arc.Weight)
+                        {
+                            maxWeight = arc.Weight;
+                            priorityTransition = transitions[i];
+                            parentSource = place;
+                        }
+                        else
+                        {
+                            isPriority = false;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < transitions.Count; i++)
+            {
+                if (transitions.Count == 1)
+                {
+                    priorityTransitionsId.Add(i);
+                    return priorityTransitionsId;
+                }
+
+                List<ArcModel> linkedArcs = Arcs.Where(arc => (arc.Target == transitions[i])).ToList();
+
+                foreach (var arc in linkedArcs)
+                {
+                    if (arc != null&& arc.Source == parentSource && maxWeight == arc.Weight && !priorityTransitionsId.Contains(i)) 
+                    {
+                        priorityTransitionsId.Add(i);
+                    }
+                    else if(arc.Source != parentSource && !priorityTransitionsId.Contains(i))
+                    {
+                        priorityTransitionsId.Add(i);
+                    }
+                }
+            }
+
+            return priorityTransitionsId;
         }
     }
 }

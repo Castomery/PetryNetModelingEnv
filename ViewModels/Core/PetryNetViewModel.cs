@@ -218,8 +218,10 @@ namespace PetryNet.ViewModels.Core
             {
                 return;
             }
+            List<TransitionViewModel> priorityTransition = GetPriorityTransition(enableTransitions);
+            //TransitionModel transition = null;
             Random rnd = new Random();
-            TransitionViewModel transitionToFire = enableTransitions[rnd.Next(0, enableTransitions.Count)];
+            TransitionViewModel transitionToFire = enableTransitions[rnd.Next(0, priorityTransition.Count)];
             List<PlaceViewModel> places = GetConnectedPlacesToTransition(transitionToFire);
             _petryNetModel.FireTransition(transitionToFire.Model);
 
@@ -229,6 +231,25 @@ namespace PetryNet.ViewModels.Core
             }
 
             CheckTransitionsState();
+        }
+
+        private List<TransitionViewModel> GetPriorityTransition(List<TransitionViewModel> enableTransitions)
+        {
+            List<TransitionModel> enabeledTransitionsModels = new List<TransitionModel>();
+            List<int> priorityId = null;
+            foreach (var enableTransition in enableTransitions)
+            {
+                enabeledTransitionsModels.Add(enableTransition.Model);
+            }
+
+            priorityId = _petryNetModel.GetTransitionPriorityId(enabeledTransitionsModels);
+
+            List<TransitionViewModel> priorityTransitions = new List<TransitionViewModel>();
+            foreach (var id in priorityId) {
+                priorityTransitions.Add(enableTransitions[id]);
+            }
+
+            return priorityTransitions;
         }
 
         private List<PlaceViewModel> GetConnectedPlacesToTransition(TransitionViewModel transition)

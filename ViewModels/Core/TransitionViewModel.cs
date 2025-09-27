@@ -13,6 +13,7 @@ namespace PetryNet.ViewModels.Core
         private double _width = 20; // Default width
         private double _height = 40; // Default height
         private bool _isEnabled = false;
+        private bool _isPriority = false;
 
         public TransitionViewModel(TransitionModel transition) : base()
         {
@@ -37,6 +38,12 @@ namespace PetryNet.ViewModels.Core
         {
             get => _isEnabled;
             set => SetProperty(ref _isEnabled, value);
+        }
+
+        public bool IsPriority
+        {
+            get => _isPriority;
+            set => SetProperty(ref _isPriority, value);
         }
     }
 }
