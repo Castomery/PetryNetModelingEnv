@@ -5,14 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PetryNet.Views"
         mc:Ignorable="d"
+        xmlns:utils="clr-namespace:PetryNet.Utils"
         Title="InvariantAnalysisWindow" Height="450" Width="800">
     <Window.Resources>
-        
+        <utils:ZeroColumnToBrushConverter x:Key="ZeroColumnConverter"/>
         <Style x:Key="StatusTextBlock" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="5,2"/>
         </Style>
+
     </Window.Resources>
 
     <Grid Margin="10">
@@ -58,32 +60,32 @@
         </GroupBox>
 
         <!-- Invariants Section -->
-        <ScrollViewer Grid.Row="1">
+        <!--<ScrollViewer Grid.Row="1">
             <StackPanel>
                 <TextBlock Text="Інваріанти" FontWeight="Bold" FontSize="16" Margin="0,10"/>
 
-                <!-- T-Invariants -->
+                --><!-- T-Invariants --><!--
                 <Grid Margin="0,10,0,20">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Header -->
+                    --><!-- Header --><!--
                     <TextBlock Grid.Row="0" Text="t = " VerticalAlignment="Center" Margin="0,0,5,0"/>
 
-                    <!-- Data Row -->
+                    --><!-- Data Row --><!--
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding TInvariants}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="0">
-                                    <!-- Name Cell (highlighted blue) -->
+                                    --><!-- Name Cell (highlighted blue) --><!--
                                     <Border Background="#0078D7" BorderBrush="Black" BorderThickness="1" Width="40" Height="30" Margin="0">
                                         <TextBlock Text="{Binding Name}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
 
-                                    <!-- Vector Values -->
-                                    <ItemsControl ItemsSource="{Binding Vector}" Margin="0">
+                                    --><!-- Vector Values --><!--
+                                    <ItemsControl ItemsSource="{Binding Vector}" Margin="0" AlternationCount="1000">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="0"/>
@@ -97,6 +99,12 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border BorderBrush="Black" BorderThickness="0,1,1,1" Width="40" Height="30" Margin="0">
+                                                    <Border.Background>
+                                                        <MultiBinding Converter="{StaticResource ZeroColumnConverter}">
+                                                            <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ContentPresenter}" Path="(ItemsControl.AlternationIndex)" />
+                                                            <Binding Path="DataContext.ZeroTColumns" RelativeSource="{RelativeSource AncestorType=ScrollViewer}" />
+                                                        </MultiBinding>
+                                                    </Border.Background>
                                                     <TextBlock Text="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>
@@ -108,28 +116,28 @@
                     </ItemsControl>
                 </Grid>
 
-                <!-- P-Invariants -->
+                --><!-- P-Invariants --><!--
                 <Grid Margin="0,20,0,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Header -->
+                    --><!-- Header --><!--
                     <TextBlock Grid.Row="0" Text="p = " VerticalAlignment="Center" Margin="0,0,5,0"/>
 
-                    <!-- Data Row -->
+                    --><!-- Data Row --><!--
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding PInvariants}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="0">
-                                    <!-- Name Cell (highlighted blue) -->
+                                    --><!-- Name Cell (highlighted blue) --><!--
                                     <Border Background="#0078D7" BorderBrush="Black" BorderThickness="1" Width="40" Height="30" Margin="0">
                                         <TextBlock Text="{Binding Name}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
 
-                                    <!-- Vector Values -->
-                                    <ItemsControl ItemsSource="{Binding Vector}" Margin="0">
+                                    --><!-- Vector Values --><!--
+                                    <ItemsControl ItemsSource="{Binding Vector}" Margin="0" AlternationCount="1000">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="0"/>
@@ -154,6 +162,10 @@
                     </ItemsControl>
                 </Grid>
             </StackPanel>
+        </ScrollViewer>-->
+
+        <ScrollViewer x:Name="InvariantsScrollViewer" Grid.Row="1">
+            
         </ScrollViewer>
     </Grid>
 </Window>

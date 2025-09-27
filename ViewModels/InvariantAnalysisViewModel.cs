@@ -10,6 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows;
 
 namespace PetryNet.ViewModels
 {
@@ -19,6 +22,9 @@ namespace PetryNet.ViewModels
 
         public ObservableCollection<InvariantRow> TInvariants { get; } = new();
         public ObservableCollection<InvariantRow> PInvariants { get; } = new();
+
+        public ObservableCollection<int> ZeroColumnsT { get; private set; } = new();
+        public ObservableCollection<int> ZeroColumnsP { get; private set; } = new();
 
         public string RepetitionStatus { get; set; } = "Невідомо";
         public string BoundednessStatus { get; set; } = "Невідомо";
@@ -109,6 +115,30 @@ namespace PetryNet.ViewModels
                     }
 
                     PInvariants.Add(invariantRow);
+                }
+            }
+
+            ZeroColumnsT.Clear();
+            if (TInvariants.Count > 0)
+            {
+                int columnCount = TInvariants[0].Vector.Count;
+
+                for (int j = 0; j < columnCount; j++)
+                {
+                    if (TInvariants.All(row => row.Vector[j] == 0))
+                        ZeroColumnsT.Add(j);
+                }
+            }
+
+            ZeroColumnsP.Clear();
+            if (PInvariants.Count > 0)
+            {
+                int columnCount = PInvariants[0].Vector.Count;
+
+                for (int j = 0; j < columnCount; j++)
+                {
+                    if (PInvariants.All(row => row.Vector[j] == 0))
+                        ZeroColumnsP.Add(j);
                 }
             }
 
